@@ -3,7 +3,7 @@
 FastADC::FastADC() {
 }
 
-void FastADC::StartADCSpeed(int pin=0, int num_val_new =1) { //8 bit 38 KSamples for second
+void FastADC::StartADCSpeed(int pin=0, int num_val_new =2) { //8 bit 38 KSamples for second
 	num_val=num_val_new;
 	if (pin > 5) {	//Only pin A0 to A5 can be readen
 		pin=0;
@@ -13,7 +13,6 @@ void FastADC::StartADCSpeed(int pin=0, int num_val_new =1) { //8 bit 38 KSamples
 		Old_ADCSRB = ADCSRB;
 		Old_ADCSRA = ADCSRA;
 		Old_ADMUX = ADMUX;
-		Old_DDRD = ADMUX;
 		val_rd=0;
 		val_wr=0;
 		val_list = malloc (sizeof(int)*num_val);
@@ -24,7 +23,7 @@ void FastADC::StartADCSpeed(int pin=0, int num_val_new =1) { //8 bit 38 KSamples
 	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS0)  |(1<<ADPS2)); //free running mode, prescaler = 32
 }
 
-void FastADC::StartADCRes(int pin=0, int num_val =1) { //10 bit 9 KSamples for second
+void FastADC::StartADCRes(int pin=0, int num_val =2) { //10 bit 9 KSamples for second
 	if (pin > 5) {	//Only pin A0 to A5 can be readen
 		pin=0;
 	}
