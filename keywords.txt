@@ -1,0 +1,16 @@
+#######################################
+# Datatypes (KEYWORD1)		      #
+#######################################
+
+FastADC	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)    #
+#######################################
+
+
+Stop		KEYWORD2
+GetArray	KEYWORD2
+Get		KEYWORD2
+StartADCSpeed	KEYWORD2
+StartADCRes	KEYWORD2
