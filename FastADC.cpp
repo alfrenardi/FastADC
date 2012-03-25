@@ -1,5 +1,8 @@
 #include "FastADC.h"
 
+FastADC::FastADC(){
+}
+
 void FastADC::StartADCSpeed(int pin=0, int num_val_new =2) { //8 bit 38 KSamples for second
 	num_val=num_val_new;
 	if (pin > 5) {	//Only pin A0 to A5 can be readen
@@ -10,10 +13,9 @@ void FastADC::StartADCSpeed(int pin=0, int num_val_new =2) { //8 bit 38 KSamples
 		Old_ADCSRB = ADCSRB;
 		Old_ADCSRA = ADCSRA;
 		Old_ADMUX = ADMUX;
-		Old_DDRD = ADMUX;
 		val_rd=0;
 		val_wr=0;
-		val_list = malloc (sizeof(int)*num_val);
+		val_list = (int*) malloc (sizeof(int)*num_val);
 	}
 	ADMUX = (1<<REFS0)|(pin);
 	ADCSRB = 0;
@@ -32,14 +34,13 @@ void FastADC::StartADCRes(int pin=0, int num_val =2) { //10 bit 9 KSamples for s
 		Old_ADMUX = ADMUX;
 		val_rd=0;
 		val_wr=0;
-		val_list = malloc (sizeof(int)*num_val);
+		val_list = (int*) malloc (sizeof(int)*num_val);
 	}
 	ADMUX = (1<<REFS0)|(pin);
 	ADCSRB = 0;
 	PRR &= ~(PRADC>>1); //ADC power reduction
 	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS0) | (1<<ADPS1) |(1<<ADPS2)); //free running mode, prescaler = 128
 }
-
 
 int FastADC::Get() {
 	if (~OnFastADC) {
@@ -62,7 +63,7 @@ void FastADC::Stop() {	//restores old values
 	}
 }
 
-void GetArray(int* ext_val_num; int ext_num_val; int pin=0; char sel = 0) {
+void GetArray(int* ext_val_num, int ext_num_val, int pin=0, char sel = 0) {
 	if (OnFastADC){
 		if (sel== 'R') {
 			Stop();
@@ -88,6 +89,7 @@ void GetArray(int* ext_val_num; int ext_num_val; int pin=0; char sel = 0) {
 	Stop();
 	return;
 }
+
 ISR(ADC_vect)
 {
 	val_list[val_wr++]=ADC;
