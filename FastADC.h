@@ -15,6 +15,7 @@ class FastADC {
         void Stop();
         int Get();
 	void GetArray(int*, int, int, char);
+	friend void __vector_21();
     private:
 	char Old_ADCSRB;
 	char Old_ADCSRA;
