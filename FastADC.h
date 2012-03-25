@@ -25,3 +25,4 @@ class FastADC {
 	int num_val;
 	char OnFastADC;
 };
+#endif
