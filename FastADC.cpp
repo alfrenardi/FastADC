@@ -1,7 +1,8 @@
 #include "FastADC.h"
 
-void FastADC::StartADCSpeed(int pin=0, int num_val_new =2) { //8 bit 38 KSamples for second
-	num_val=num_val_new;
+static int val;
+
+void FastADC::StartADCSpeed(int pin=0) { //8 bit 38 KSamples for second
 	if (pin > 5) {	//Only pin A0 to A5 can be readen
 		pin=0;
 	}
@@ -10,9 +11,6 @@ void FastADC::StartADCSpeed(int pin=0, int num_val_new =2) { //8 bit 38 KSamples
 		Old_ADCSRB = ADCSRB;
 		Old_ADCSRA = ADCSRA;
 		Old_ADMUX = ADMUX;
-		val_rd=0;
-		val_wr=0;
-		val_list = (int*) malloc (sizeof(int)*num_val);
 	}
 	ADMUX = (1<<REFS0)|(pin);
 	ADCSRB = 0;
@@ -20,7 +18,7 @@ void FastADC::StartADCSpeed(int pin=0, int num_val_new =2) { //8 bit 38 KSamples
 	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS0)  |(1<<ADPS2)); //free running mode, prescaler = 32
 }
 
-void FastADC::StartADCRes(int pin=0, int num_val =2) { //10 bit 9 KSamples for second
+void FastADC::StartADCRes(int pin=0) { //10 bit 9 KSamples for second
 	if (pin > 5) {	//Only pin A0 to A5 can be readen
 		pin=0;
 	}
@@ -29,9 +27,6 @@ void FastADC::StartADCRes(int pin=0, int num_val =2) { //10 bit 9 KSamples for s
 		Old_ADCSRB = ADCSRB;
 		Old_ADCSRA = ADCSRA;
 		Old_ADMUX = ADMUX;
-		val_rd=0;
-		val_wr=0;
-		val_list = (int*) malloc (sizeof(int)*num_val);
 	}
 	ADMUX = (1<<REFS0)|(pin);
 	ADCSRB = 0;
@@ -40,15 +35,7 @@ void FastADC::StartADCRes(int pin=0, int num_val =2) { //10 bit 9 KSamples for s
 }
 
 int FastADC::Get() {
-	if (~OnFastADC) {
-	 	return -1;
-	}
-	while (val_wr == val_rd);
-	if (val_rd < (num_val-1)){
-		return val_list [val_rd++];
-	}
-	val_rd=0;
-	return val_list [num_val-1];
+	return val;
 }
 
 void FastADC::Stop() {	//restores old values
@@ -56,7 +43,6 @@ void FastADC::Stop() {	//restores old values
 		ADCSRB = Old_ADCSRB;
 		ADCSRA = Old_ADCSRA;
 		ADMUX = Old_ADMUX;
-		free(val_list);
 	}
 }
 
@@ -89,8 +75,5 @@ void FastADC::Stop() {	//restores old values
 
 ISR(ADC_vect)
 {
-	FastADC::val_list[val_wr++]=ADC;
-	if (FastADC::val_wr > (FastADC::num_val-1)) {
-		FastADC::val_wr=0;
-	}
+	val=ADC;
 }
