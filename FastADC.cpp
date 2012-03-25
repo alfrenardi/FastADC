@@ -46,33 +46,6 @@ void FastADC::Stop() {	//restores old values
 	}
 }
 
-//void FastADC::GetArray(int* ext_val_num, int ext_num_val, int pin=0, char sel = 0) {
-//	if (OnFastADC){
-//		if (sel== 'R') {
-//			Stop();
-//			StartADCRes(pin, ext_num_val);
-//		} else if (sel== 'S')
-//			Stop();
-//			StartADCRes(pin, ext_num_val);
-//		}
-//		for (int i = 0; i < ext_num_val; i++){
-//			ext_val_num[i]=Get();
-//		}
-//	return;
-//	}
-//	if (sel== 'R') {
-//		StartADCRes(pin, ext_num_val);
-//	} else if (sel== 'S') {
-//		Stop();
-//		StartADCRes(pin, ext_num_val);
-//	}
-//	for (int i = 0; i < ext_num_val; i++) {
-//		ext_val_num[i]=Get();
-//	}
-//	Stop();
-//	return;
-//}
-
 ISR(ADC_vect)
 {
 	val=ADC;
