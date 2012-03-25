@@ -10,8 +10,8 @@
 class FastADC {
     
     public:
-        void StartADCRes();
-        void StartADCSpeed();
+        void StartADCRes(int);
+        void StartADCSpeed(int);
         void Stop();
         int Get();
     private:
