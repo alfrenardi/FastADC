@@ -89,8 +89,8 @@ void FastADC::Stop() {	//restores old values
 
 ISR(ADC_vect)
 {
-	val_list[val_wr++]=ADC;
-	if (val_wr > (num_val-1)) {
-		val_wr=0;
+	FastADC::val_list[val_wr++]=ADC;
+	if (FastADC::val_wr > (FastADC::num_val-1)) {
+		FastADC::val_wr=0;
 	}
 }
