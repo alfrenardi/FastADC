@@ -14,7 +14,7 @@ class FastADC {
         void StartADCSpeed(int, int);
         void Stop();
         int Get();
-	void GetArray();
+	void GetArray(int*, int, int, char);
     private:
 	char Old_ADCSRB;
 	char Old_ADCSRA;
