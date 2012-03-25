@@ -1,8 +1,5 @@
 #include "FastADC.h"
 
-FastADC::FastADC() {
-}
-
 void FastADC::StartADCSpeed(int pin=0, int num_val_new =2) { //8 bit 38 KSamples for second
 	num_val=num_val_new;
 	if (pin > 5) {	//Only pin A0 to A5 can be readen
@@ -13,6 +10,7 @@ void FastADC::StartADCSpeed(int pin=0, int num_val_new =2) { //8 bit 38 KSamples
 		Old_ADCSRB = ADCSRB;
 		Old_ADCSRA = ADCSRA;
 		Old_ADMUX = ADMUX;
+		Old_DDRD = ADMUX;
 		val_rd=0;
 		val_wr=0;
 		val_list = malloc (sizeof(int)*num_val);
@@ -56,7 +54,7 @@ int FastADC::Get() {
 }
 
 void FastADC::Stop() {	//restores old values
-	if (OnFastAdc) {
+	if (OnFastADC) {
 		ADCSRB = Old_ADCSRB;
 		ADCSRA = Old_ADCSRA;
 		ADMUX = Old_ADMUX;
@@ -64,7 +62,7 @@ void FastADC::Stop() {	//restores old values
 	}
 }
 
-void GetArray(*int ext_val_num; int ext_num_val; int pin=0; char sel = 0) {
+void GetArray(int* ext_val_num; int ext_num_val; int pin=0; char sel = 0) {
 	if (OnFastADC){
 		if (sel== 'R') {
 			Stop();
