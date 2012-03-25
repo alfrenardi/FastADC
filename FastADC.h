@@ -10,20 +10,14 @@
 class FastADC {
     
     public:
-        void StartADCRes(int, int);
-        void StartADCSpeed(int, int);
+        void StartADCRes();
+        void StartADCSpeed();
         void Stop();
         int Get();
-	void GetArray(int*, int, int, char);
-	friend void __vector_21();
     private:
 	char Old_ADCSRB;
 	char Old_ADCSRA;
 	char Old_ADMUX;
-   	int* val_list;
-	int val_rd;
-	int val_wr;
-	int num_val;
 	char OnFastADC;
 };
 #endif
