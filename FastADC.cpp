@@ -5,6 +5,7 @@
 
 //======BUFFERS
 
+static volatile char OnFastADC;
 static volatile int analogValue;
 //static volatile int newData;
 
