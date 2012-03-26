@@ -1,6 +1,33 @@
 #include "FastADC.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
-static int val;
+
+//======BUFFERS
+
+static volatile int analogValue;
+static volatile int newData;
+
+//======INTERRUPT VECTOR
+
+ISR(ADC_vect)
+{
+	volatile int sreg = SREG;	//saving the status register
+	analogValue=ADC;			//putting the analog value in the buffer
+	newData = 1;				//new data available
+	SREG = sreg;				//restoring the status register
+}
+
+//=======CONSTRUCTOR
+
+FastADC::FastADC(){
+	Old_ADCSRB = 0;
+	Old_ADCSRA = 0;
+	Old_ADMUX = 0;
+	OnFastADC = 0;
+	}
+	
+//========INSTANCE METHODS
 
 void FastADC::StartADCSpeed(int pin=0) { //8 bit 38 KSamples for second
 	if (pin > 5) {	//Only pin A0 to A5 can be readen
@@ -12,10 +39,10 @@ void FastADC::StartADCSpeed(int pin=0) { //8 bit 38 KSamples for second
 		Old_ADCSRA = ADCSRA;
 		Old_ADMUX = ADMUX;
 	}
-	ADMUX = (1<<REFS0)|(pin);
-	ADCSRB = 0;
-	PRR &= ~(PRADC>>1); //ADC power reduction
-	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS0)  |(1<<ADPS2)); //free running mode, prescaler = 32
+	DIDR0 = 0b00111111;
+ 	ADMUX = 0b01000000;
+ 	ADCSRB = 0;
+ 	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS0) | (1<<ADPS1) |(1<<ADPS2));
 }
 
 void FastADC::StartADCRes(int pin=0) { //10 bit 9 KSamples for second
@@ -35,7 +62,13 @@ void FastADC::StartADCRes(int pin=0) { //10 bit 9 KSamples for second
 }
 
 int FastADC::Get() {
-	return val;
+	sei();
+	while(newData==0);		//wait until new data are available
+	cli();
+	int i = analogValue;
+	newData = 0;			//invalidate data for future readingsa
+	sei();
+	return i;				//return them
 }
 
 void FastADC::Stop() {	//restores old values
@@ -46,7 +79,6 @@ void FastADC::Stop() {	//restores old values
 	}
 }
 
-ISR(ADC_vect)
-{
-	val=ADC;
-}
+//========PREINSTANTIATED OBJECTS
+
+FastADC FreeRunningADC;
