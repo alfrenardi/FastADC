@@ -43,7 +43,7 @@ void FastADC::StartADCMaxSpeed(int pin=0) { //7 bit 74 KSamples for second
 	ADMUX = (1<<REFS0)|(pin);
 	ADCSRB = 0;
 	PRR &= ~(PRADC>>1); //ADC power reduction
-	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS1); //free running mode, prescaler = 16
+	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS1)); //free running mode, prescaler = 16
 	sei();
 }
 
