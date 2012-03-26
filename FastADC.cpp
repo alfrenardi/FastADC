@@ -82,6 +82,9 @@ void FastADC::StartADCRes(int pin=0) { //10 bit 9 KSamples for second
 
 int FastADC::Get() {
 	sei();
+	if (~OnFastADC){
+		return -1;
+	}
 	while(OnFastADC==1);		//wait until new data are available
 //	cli();
 	int i = analogValue;
@@ -96,6 +99,7 @@ void FastADC::Stop() {	//restores old values
 		ADCSRA = Old_ADCSRA;
 		ADMUX = Old_ADMUX;
 	}
+	OnFastADC=0;
 }
 
 //========PREINSTANTIATED OBJECTS
