@@ -99,8 +99,8 @@ void FastADC::Stop() {	//restores old values
 		ADCSRB = Old_ADCSRB;
 		ADCSRA = Old_ADCSRA;
 		ADMUX = Old_ADMUX;
+		OnFastADC=0;
 	}
-	OnFastADC=0;
 }
 
 //========PREINSTANTIATED OBJECTS
