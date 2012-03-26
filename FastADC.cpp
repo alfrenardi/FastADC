@@ -39,10 +39,10 @@ void FastADC::StartADCSpeed(int pin=0) { //8 bit 38 KSamples for second
 		Old_ADCSRA = ADCSRA;
 		Old_ADMUX = ADMUX;
 	}
-	DIDR0 = 0b00111111;
- 	ADMUX = 0b01000000;
- 	ADCSRB = 0;
- 	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS0) | (1<<ADPS1) |(1<<ADPS2));
+	ADMUX = (1<<REFS0)|(pin);
+	ADCSRB = 0;
+	PRR &= ~(PRADC>>1); //ADC power reduction
+	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (1<<ADPS0)  |(1<<ADPS2)); //free running mode, prescaler = 32
 }
 
 void FastADC::StartADCRes(int pin=0) { //10 bit 9 KSamples for second
