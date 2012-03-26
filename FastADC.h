@@ -12,7 +12,7 @@ class FastADC {
 	char Old_ADCSRB;
 	char Old_ADCSRA;
 	char Old_ADMUX;
-	char OnFastADC;
+//	char OnFastADC;
 };
 
 extern FastADC FreeRunningADC;
