@@ -5,8 +5,8 @@
 
 //======BUFFERS
 
-static volatile char OnFastADC=0;
-static volatile int analogValue=0;
+static volatile char OnFastADC;
+static volatile int analogValue;
 
 //======INTERRUPT VECTOR
 
@@ -82,14 +82,14 @@ void FastADC::StartADCRes(int pin=0) { //10 bit 9 KSamples for second
 
 int FastADC::Get() {
 	sei();
-	if (~OnFastADC){
-		return -1;
-	}
+//	if (~OnFastADC){
+//		return -1;
+//	}
 	while(OnFastADC==1);		//wait until new data are available
-//	cli();
+	cli();
 	int i = analogValue;
 	OnFastADC = 1;			//invalidate data for future readingsa
-//	sei();
+	sei();
 	return i;				//return them
 }
 
