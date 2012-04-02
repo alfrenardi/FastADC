@@ -34,7 +34,7 @@ void FastADC::StartADCMaxSpeed(int pin=0) { //7 bit 74 KSamples for second
 		pin=0;
 	}
 	if (~OnFastADC) {  //Saves old values of ACSRB, ACSRA, ADMUX
-		char OnFastADC=1;
+		OnFastADC=1;
 		Old_ADCSRB = ADCSRB;
 		Old_ADCSRA = ADCSRA;
 		Old_ADMUX = ADMUX;
@@ -51,7 +51,7 @@ void FastADC::StartADCSpeed(int pin=0) { //8 bit 37 KSamples for second
 		pin=0;
 	}
 	if (~OnFastADC) {  //Saves old values of ACSRB, ACSRA, ADMUX, DDRD
-		char OnFastADC=1;
+		OnFastADC=1;
 		Old_ADCSRB = ADCSRB;
 		Old_ADCSRA = ADCSRA;
 		Old_ADMUX = ADMUX;
@@ -68,7 +68,7 @@ void FastADC::StartADCRes(int pin=0) { //10 bit 9 KSamples for second
 		pin=0;
 	}
 	if (~OnFastADC) {  //Saves old values of ACSRB, ACSRA, ADMUX
-		char OnFastADC=1;
+		OnFastADC=1;
 		Old_ADCSRB = ADCSRB;
 		Old_ADCSRA = ADCSRA;
 		Old_ADMUX = ADMUX;
