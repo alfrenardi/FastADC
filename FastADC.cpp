@@ -5,9 +5,8 @@
 
 //======BUFFERS
 
-static volatile char OnFastADC;
-static volatile int analogValue;
-//static volatile int newData;
+static volatile char OnFastADC=0;
+static volatile int analogValue=0;
 
 //======INTERRUPT VECTOR
 
