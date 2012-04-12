@@ -2,36 +2,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-
-//======BUFFERS
-
-static volatile char OnFastADC;
-static volatile int analogValue;
-
-//======INTERRUPT VECTOR
-
-ISR(ADC_vect)
-{
-	analogValue=ADC;			//putting the analog value in the buffer
-	OnFastADC = 2;				//new data available
-}
-
-//=======CONSTRUCTOR
-
-FastADC::FastADC(){
-	Old_ADCSRB = 0;
-	Old_ADCSRA = 0;
-	Old_ADMUX = 0;
-	OnFastADC = 0;
-}
-	
-//========INSTANCE METHODS
-
-#include "FastADC.h"
-#include <avr/io.h>
-#include <avr/interrupt.h>
-
-
 //======BUFFERS
 
 static volatile char OnFastADC;
