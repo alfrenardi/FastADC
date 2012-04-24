@@ -9,7 +9,6 @@ FastADC	KEYWORD1
 #######################################
 
 
-Stop		 KEYWORD2
-GetArray 	 KEYWORD2
-Get		 KEYWORD2
+Stop  	KEYWORD2
+Get 		KEYWORD2
 StartADC 	KEYWORD2
