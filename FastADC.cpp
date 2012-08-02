@@ -56,7 +56,7 @@ int FastADC::Get() {
 	while(OnFastADC==1);		//wait until new data are available
 	cli();
 	int i = analogValue;
-	OnFastADC = 1;			//invalidate data for future readingsa
+	OnFastADC = 1;			//invalidate data for future readings
 	sei();
 	return i;				//return them
 }
