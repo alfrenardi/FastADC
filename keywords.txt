@@ -2,7 +2,7 @@
 # Datatypes (KEYWORD1)		      #
 #######################################
 
-FastADC	KEYWORD1
+FreeRunningADC	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)    #
