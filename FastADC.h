@@ -29,20 +29,20 @@ class FastADC {
 
 private:
 
-	int buffer;
-	int pin_number; 
+    int buffer;
+    int pin_number; 
 
-	bool available;
-	bool running;
+    bool available;
+    bool running;
 
-	char old_ADCSRB;
-	char old_ADCSRA;
-	char old_ADMUX;
-	char old_PRADC;
+    char old_ADCSRB;
+    char old_ADCSRA;
+    char old_ADMUX;
+    char old_PRADC;
 
-	void operator<<(int);
+    void operator<<(int);
 
-	friend void __vector_21(void);
+    friend void __vector_21(void);
 
 public:
 

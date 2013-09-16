@@ -21,11 +21,11 @@
 #include "FastADC.h"
 
 void setup(){
-  	FADC.start(A0);
-  	Serial.begin(9600);
+    FADC.start(A0);
+    Serial.begin(9600);
 }
 
 void loop(){
-	int i = FADC.get();
-	Serial.println(i, DEC);
+    int i = FADC.get();
+    Serial.println(i, DEC);
 }
