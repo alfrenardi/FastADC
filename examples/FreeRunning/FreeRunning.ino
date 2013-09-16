@@ -21,7 +21,7 @@
 #include "FastADC.h"
 
 void setup(){
-  	FADC.start(A0, 10);
+  	FADC.start(A0);
   	Serial.begin(9600);
 }
 

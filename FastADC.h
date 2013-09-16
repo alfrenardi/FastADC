@@ -19,16 +19,18 @@
  ************************************************************************************/
 
 #include <avr/interrupt.h>
-
 extern "C" void __vector_21(void);
+
+#define PRESCALER 7
+
+typedef unsigned int uint;
 
 class FastADC {
 
 private:
 
-	int pin_number; 
-	int resolution;
 	int buffer;
+	int pin_number; 
 
 	bool available;
 	bool running;
@@ -46,7 +48,7 @@ public:
 
     FastADC();
 
-    void start(int,int);
+    void start(uint);
     void stop();
     int get();
 

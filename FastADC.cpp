@@ -36,20 +36,23 @@ ISR(ADC_vect){
 	 * It puts the ADC value in the buffer.
 	 */
 	FADC.buffer = ADC;			
+	FADC.available = true;
 }
 
 // MEMBER FUNCTIONS
 
 FastADC::FastADC(){
 	buffer = 0;
-	pin_number = A0;
-	resolution = 10;
+	pin_number = 0;
+	available = false;
+	running = false;
 }
 
 
-void FastADC::start(int pin, int res){ 
+void FastADC::start(uint pin){ 
 	/*
-	 * This function starts the ADC.
+	 * This function starts the ADC at the 
+	 * lowest speed.
 	 */
 	if(running){
 		/*
@@ -67,10 +70,15 @@ void FastADC::start(int pin, int res){
 		 * configuration before starting
 		 */
 		if(pin >= A0 and pin <= A5){
-			pin_number = pin;
-		}
-		if(res >= 7 and res <= 10){
-			resolution = res;
+			/*
+			 * A valid ADC pin. 
+			 * ADC registers map pins 
+			 * with an offset of A0.
+			 * If the pin is not correct
+			 * the last used pin (es. A0)
+			 * will be selected.
+			 */
+			pin_number = pin-A0;
 		}
 		old_ADCSRB = ADCSRB;
 		old_ADCSRA = ADCSRA;
@@ -80,11 +88,11 @@ void FastADC::start(int pin, int res){
 	// Internal registers are configured to start
 	ADMUX = ((1<<REFS0)|pin_number);
 	ADCSRB = 0;
-	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | resolution); 
-	// Power on the ADC clock
-	PRR |= ~(1<<PRADC); 
+	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (PRESCALER<<ADPS0)); 
+	delay(100);
 	sei();
 	running = true;
+
 }
 
 
