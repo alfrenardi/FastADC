@@ -1,75 +1,133 @@
+/***********************************************************************************
+ * Copyright © 2013 Daniele Faugiana, Alfredo Nardi
+ *   
+
+ * This file is part of "FastADC Arduino Library".
+ * 
+ * "FastADC Arduino Library" is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * "FastADC Arduino Library" is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with "WiPower Arduino Library". If not, see <http://www.gnu.org/licenses/>.
+ ************************************************************************************/
+
+
 #include "FastADC.h"
-#include <avr/io.h>
+#include "Arduino.h"
 #include <avr/interrupt.h>
 
-//======BUFFERS
+// GLOBAL OBJECT PRE-INSTANTIATION
 
-static volatile char OnFastADC;
-static volatile int analogValue;
+FastADC FADC;
 
-//======INTERRUPT VECTOR
+// ADC INTERRUPT VECTOR 
 
-ISR(ADC_vect)
-{
-	analogValue=ADC;			//putting the analog value in the buffer
-	OnFastADC = 2;				//new data available
+ISR(ADC_vect){
+	/*
+	 * When new data is available
+	 * the interrupt handler is called.
+	 * It puts the ADC value in the buffer.
+	 */
+	FADC.buffer = ADC;			
 }
 
-//=======CONSTRUCTOR
+// MEMBER FUNCTIONS
 
 FastADC::FastADC(){
-	Old_ADCSRB = 0;
-	Old_ADCSRA = 0;
-	Old_ADMUX = 0;
-	OnFastADC = 0;
+	buffer = 0;
+	pin_number = A0;
+	resolution = 10;
 }
-	
-//========INSTANCE METHODS
 
-void FastADC::StartADC(int pin=14,int res=10) { // default pin A0, 10 bit 9 KSamples for second
-	if ((pin < 0) | (pin > 5)) {	//Only pin A0 to A5 can be readen
-		if ((pin < 14) | (pin > 18)) {
-			pin=1;
-		} else {
-			pin-=14;
+
+void FastADC::start(int pin, int res){ 
+	/*
+	 * This function starts the ADC.
+	 */
+	if(running){
+		/*
+		 * If the ADC is already running
+		 * the configuration is not modified
+		 * and the ADC keeps running.
+		 */
+		return;
+	}
+	else{
+		/*
+		 * If not, the FastADC perform
+		 * some checks to input parameters and then
+		 * backups the old registers
+		 * configuration before starting
+		 */
+		if(pin >= A0 and pin <= A5){
+			pin_number = pin;
 		}
-	}
-	if ((res > 10)|(res<7)){
-		res=10;
-	}
-	res -= 3;
-	if (~OnFastADC) {  //Saves old values of ACSRB, ACSRA, ADMUX
-		OnFastADC=1;
-		Old_ADCSRB = ADCSRB;
-		Old_ADCSRA = ADCSRA;
-		Old_ADMUX = ADMUX;
-	}
-	ADMUX = ((1<<REFS0)|(pin));
+		if(res >= 7 and res <= 10){
+			resolution = res;
+		}
+		old_ADCSRB = ADCSRB;
+		old_ADCSRA = ADCSRA;
+		old_ADMUX = ADMUX;
+		old_PRADC = PRR & PRADC;
+ 	};
+	// Internal registers are configured to start
+	ADMUX = ((1<<REFS0)|pin_number);
 	ADCSRB = 0;
-	PRR &= ~(PRADC>>1); //ADC power reduction
-	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | res); //free running mode, prescaler
+	ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | resolution); 
+	// Power on the ADC clock
+	PRR |= ~(1<<PRADC); 
 	sei();
+	running = true;
 }
 
-int FastADC::Get() {
-	sei();
-	while(OnFastADC==1);		//wait until new data are available
+
+int FastADC::get(){
+	if(!running){
+		// FastADC needs to be started first
+		return -1;
+	};
+	// Wait until new data are available
+	while(!available);	
 	cli();
-	int i = analogValue;
-	OnFastADC = 1;			//invalidate data for future readings
+	// Retrieve data from the buffer
+	int i = buffer;
+	available = false;			
 	sei();
-	return i;				//return them
+	return i;
 }
 
-void FastADC::Stop() {	//restores old values
-	if (OnFastADC) {
-		ADCSRB = Old_ADCSRB;
-		ADCSRA = Old_ADCSRA;
-		ADMUX = Old_ADMUX;
-		OnFastADC=0;
+
+void FastADC::stop(){	
+	/*
+	 * Does not erase the buffer
+	 * but set back the old registers
+	 * configuration for the ADC
+	 */
+	if(!running){
+		return;
+	}
+	else{
+		cli();
+		ADCSRB = old_ADCSRB;
+		ADCSRA = old_ADCSRA;
+		ADMUX = old_ADMUX;
+		PRR |= old_PRADC; 
+		sei();
+		running = false;
 	}
 }
 
-//========PREINSTANTIATED OBJECTS
 
-FastADC FreeRunningADC;
+FastADC::~FastADC(void){
+	ADCSRB = old_ADCSRB;
+	ADCSRA = old_ADCSRA;
+	ADMUX = old_ADMUX;
+	PRR |= old_PRADC; 
+}

@@ -2,13 +2,13 @@
 # Datatypes (KEYWORD1)		      #
 #######################################
 
-FreeRunningADC	KEYWORD1
+FADC	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)    #
 #######################################
 
 
-Stop  KEYWORD2
-Get KEYWORD2
-StartADC  KEYWORD2
+stop	KEYWORD2
+get	KEYWORD2
+start	KEYWORD2

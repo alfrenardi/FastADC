@@ -18,40 +18,14 @@
  * along with "WiPower Arduino Library". If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************************/
 
-#include <avr/interrupt.h>
+#include "FastADC.h"
 
-extern "C" void __vector_21(void);
+void setup(){
+  	FADC.start(A0, 10);
+  	Serial.begin(9600);
+}
 
-class FastADC {
-
-private:
-
-	int pin_number; 
-	int resolution;
-	int buffer;
-
-	bool available;
-	bool running;
-
-	char old_ADCSRB;
-	char old_ADCSRA;
-	char old_ADMUX;
-	char old_PRADC;
-
-	void operator<<(int);
-
-	friend void __vector_21(void);
-
-public:
-
-    FastADC();
-
-    void start(int,int);
-    void stop();
-    int get();
-
-    ~FastADC();
-    
-};
-
-extern FastADC FADC;
+void loop(){
+	int i = FADC.get();
+	Serial.println(i, DEC);
+}
