@@ -33,34 +33,56 @@ ISR(ADC_vect){
     /*
      * When new data is available
      * the interrupt handler is called.
-     * It puts the ADC value in the buffer.
+     * It puts the ADC value in the buffer and it calls the bounded function (if it have been defined)
      */
-    FADC.buffer = ADC;          
-    FADC.available = true;
+    if (running) {
+        /*
+         * FastADC must have been started.
+         */
+        //Truncates unuseful bits
+        FADC.buffer = ADC >> (10 - resolution);;          
+        FADC.available = true;
+        FADC.bounded_function (FADC.buffer);
+    }
 }
 
 // MEMBER FUNCTIONS
 
 FastADC::FastADC(){
+    //default values
     buffer = 0;
     pin_number = 0;
     available = false;
     running = false;
+    resolution = 10;
 }
 
 
-void FastADC::start(uint pin){ 
+void FastADC::start(uint pin, uint resolution_bits) { //TO DO: Check how it beahaves when pin is selected as output
     /*
-     * This function starts the ADC at the 
-     * lowest speed.
+     * This function starts the ADC. Resolution affects speed.
+     *
+     * Arg: Pin (between A0 and A5)
+     * Arg: resolution (between 7 bit and 10).
+     *
+     * If arguments are not valid or missing, last used values are used.
+     * If it is the first time, default values are used (pin = A0 and resolution = 10)
      */
     if(running){
-        /*
-         * If the ADC is already running
-         * the configuration is not modified
-         * and the ADC keeps running.
-         */
-        return;
+        if (pin_numer == pin){
+            /*
+             * If the ADC is already running and the selected pin is the same,
+             * the configuration is not modified
+             * and the ADC keeps running.
+             */
+            return;
+        } else {
+            /*
+             *  If not, ADC must be stopped and restarted with the new configuration.
+             */
+            this->stop();
+            this->start(pin);
+        }
     }
     else{
         /*
@@ -69,6 +91,12 @@ void FastADC::start(uint pin){
          * backups the old registers
          * configuration before starting
          */
+        if(resolution_bits >= 7 and resolution_bits <= 10){
+            /*
+             * Resolution must be a valid number between 7 and 10
+             */
+            resolution = resolution_bits;
+        }
         if(pin >= A0 and pin <= A5){
             /*
              * A valid ADC pin. 
@@ -78,7 +106,7 @@ void FastADC::start(uint pin){
              * the last used pin (es. A0)
              * will be selected.
              */
-            pin_number = pin-A0;
+            pin_number = pin;
         }
         old_ADCSRB = ADCSRB;
         old_ADCSRA = ADCSRA;
@@ -86,13 +114,12 @@ void FastADC::start(uint pin){
         old_PRADC = PRR & PRADC;
     };
     // Internal registers are configured to start
-    ADMUX = ((1<<REFS0)|pin_number);
+    ADMUX = ((1<<REFS0)|(pin_number-A0)); // Pin number is affected by an offset
     ADCSRB = 0;
-    ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | (PRESCALER<<ADPS0)); 
-    delay(100);
+    ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | resolution); //TO DO: Check on datasheet
+    delay(100); // TO DO: Check
     sei();
     running = true;
-
 }
 
 
@@ -106,7 +133,7 @@ int FastADC::get(){
     cli();
     // Retrieve data from the buffer
     int i = buffer;
-    available = false;          
+    available = false;
     sei();
     return i;
 }
@@ -130,6 +157,37 @@ void FastADC::stop(){
         sei();
         running = false;
     }
+}
+
+int FastADC::pin(){
+    /*
+     * Returns the pin which is being sampled.
+     * If none has been selected, returns -1.
+     * 
+     */
+    if(!running){
+        // No pin
+        return -1;
+    };
+    return pin;
+}
+
+void FastADC::bind(void (*fun(int)){ //TO DO: Check
+    /*
+     * It defines a custom callback. Function has to be void and it must take an integer as argument
+     * If one has already been defined, the new one replace the old one.
+     * 
+     * Arg: A function
+     * 
+     */
+    bounded_function = fun;
+}
+
+void FastADC::unbind(){
+    /*
+     * It removes custom callback.
+     */ 
+    bounded_function = NULL;
 }
 
 
