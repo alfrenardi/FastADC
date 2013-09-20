@@ -21,8 +21,15 @@
 #include <avr/interrupt.h>
 extern "C" void __vector_21(void);
 
+//Useful typedefs
 typedef unsigned int uint;
 typedef void (*callback)(int);
+
+//Definitions that bind speed to significant bits
+#define SPEED_9_kHz 10
+#define SPEED_18_kHz 9
+#define SPEED_37_kHz 8
+#define SPEED_74_kHz 7
 
 class FastADC {
 
@@ -40,13 +47,15 @@ private:
     char old_ADMUX;
     char old_PRADC;
 
+    callback bounded_function;
+
     friend void __vector_21(void);
 
 public:
 
     FastADC();
 
-    void start(uint);
+    void start(uint, uint);
     void stop();
     int get();
     int pin();

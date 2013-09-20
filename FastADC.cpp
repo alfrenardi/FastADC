@@ -35,12 +35,12 @@ ISR(ADC_vect){
      * the interrupt handler is called.
      * It puts the ADC value in the buffer and it calls the bounded function (if it have been defined)
      */
-    if (running) {
+    if (FADC.running) {
         /*
          * FastADC must have been started.
          */
         //Truncates unuseful bits
-        FADC.buffer = ADC >> (10 - resolution);;          
+        FADC.buffer = ADC >> (10 - resolution);          
         FADC.available = true;
         FADC.bounded_function (FADC.buffer);
     }
@@ -59,7 +59,7 @@ FastADC::FastADC(){
 }
 
 
-void FastADC::start(uint pin, uint resolution_bits) { //TO DO: Check how it beahaves when pin is selected as output
+void FastADC::start(uint pin = 0, uint resolution_bits = 0) { //TO DO: Check how it beahaves when pin is selected as output
     /*
      * This function starts the ADC. Resolution affects speed.
      *
@@ -82,7 +82,7 @@ void FastADC::start(uint pin, uint resolution_bits) { //TO DO: Check how it beah
              *  If not, ADC must be stopped and restarted with the new configuration.
              */
             this->stop();
-            this->start(pin);
+            this->start(pin, resolution_bits);
         }
     }
     else{
@@ -170,10 +170,10 @@ int FastADC::pin(){
         // No pin
         return -1;
     };
-    return pin;
+    return pin_number;
 }
 
-void FastADC::bind(calback fun){ //TO DO: Check
+void FastADC::bind(callback fun){ //TO DO: Check
     /*
      * It defines a custom callback. Function has to be void and it must take an integer as argument
      * If one has already been defined, the new one replace the old one.
