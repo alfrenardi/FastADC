@@ -55,6 +55,7 @@ FastADC::FastADC(){
     available = false;
     running = false;
     resolution = 10;
+    bounded_function = NULL;
 }
 
 
@@ -116,7 +117,7 @@ void FastADC::start(uint pin, uint resolution_bits) { //TO DO: Check how it beah
     // Internal registers are configured to start
     ADMUX = ((1<<REFS0)|(pin_number-A0)); // Pin number is affected by an offset
     ADCSRB = 0;
-    ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | resolution); //TO DO: Check on datasheet
+    ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | ((7-(10-resolution))<<ADPS0); //TO DO: Check on datasheet
     delay(100); // TO DO: Check
     sei();
     running = true;
@@ -172,7 +173,7 @@ int FastADC::pin(){
     return pin;
 }
 
-void FastADC::bind(void (*fun(int)){ //TO DO: Check
+void FastADC::bind(calback fun){ //TO DO: Check
     /*
      * It defines a custom callback. Function has to be void and it must take an integer as argument
      * If one has already been defined, the new one replace the old one.

@@ -22,6 +22,7 @@
 extern "C" void __vector_21(void);
 
 typedef unsigned int uint;
+typedef void (*callback)(int);
 
 class FastADC {
 
@@ -39,8 +40,6 @@ private:
     char old_ADMUX;
     char old_PRADC;
 
-    void (*bounded_function)(int);
-
     friend void __vector_21(void);
 
 public:
@@ -52,7 +51,7 @@ public:
     int get();
     int pin();
 
-    void bind(void (*(int));
+    void bind(callback);
     void unbind();
 
     ~FastADC();
