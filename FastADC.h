@@ -25,7 +25,7 @@ extern "C" void __vector_21(void);
 typedef unsigned int uint;
 typedef void (*callback)(int);
 
-//Definitions that bind speed to significant bits
+//Definitions bind speed to significant bits
 #define SPEED_9_kHz 10
 #define SPEED_18_kHz 9
 #define SPEED_37_kHz 8
@@ -51,14 +51,24 @@ private:
 
     friend void __vector_21(void);
 
+    double reference;
+
 public:
 
     FastADC();
 
     void start(uint, uint);
+    void start(uint);
+    void start();
+
     void stop();
     int get();
     int pin();
+
+    double voltage();
+    double voltage(int);
+    double voltage(double);
+
 
     void bind(callback);
     void unbind();

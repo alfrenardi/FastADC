@@ -8,7 +8,10 @@ FADC	KEYWORD1
 # Methods and Functions (KEYWORD2)    #
 #######################################
 
-
 stop	KEYWORD2
-get	KEYWORD2
+get	    KEYWORD2
 start	KEYWORD2
+pin     KEYWORD2
+voltage KEYWORD2
+bind    KEYWORD2
+unbind  KEYWORD2

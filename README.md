@@ -21,5 +21,4 @@ along with "FastADC Arduino Library". If not, see <http://www.gnu.org/licenses/>
 
 ***
 
-Contact me at <wifau@me.com> for informations.
-
+Contact us at <wifau@me.com> or <alfrenardi@gmail.com> for informations.

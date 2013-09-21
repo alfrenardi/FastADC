@@ -40,7 +40,7 @@ ISR(ADC_vect){
          * FastADC must have been started.
          */
         //Truncates unuseful bits
-        FADC.buffer = ADC >> (10 - resolution);          
+        FADC.buffer = ADC;          
         FADC.available = true;
         FADC.bounded_function (FADC.buffer);
     }
@@ -51,15 +51,29 @@ ISR(ADC_vect){
 FastADC::FastADC(){
     //default values
     buffer = 0;
-    pin_number = 0;
+    pin_number = A0;
     available = false;
     running = false;
     resolution = 10;
     bounded_function = NULL;
+    reference = 5;
 }
 
+void FastADC::start(uint pin) {
+    /*
+     * This is a definition used to have default arguments. Arduino enviroment doesn't support standard C/C++ default arguments syntax.
+     */
+    this->start(pin, 0);
+}
 
-void FastADC::start(uint pin = 0, uint resolution_bits = 0) { //TO DO: Check how it beahaves when pin is selected as output
+void FastADC::start() {
+    /*
+     * This is a definition used to have default arguments. Arduino enviroment doesn't support standard C/C++ default arguments syntax.
+     */
+    this->start(0, 0);
+}
+
+void FastADC::start(uint pin, uint resolution_bits) {
     /*
      * This function starts the ADC. Resolution affects speed.
      *
@@ -70,7 +84,7 @@ void FastADC::start(uint pin = 0, uint resolution_bits = 0) { //TO DO: Check how
      * If it is the first time, default values are used (pin = A0 and resolution = 10)
      */
     if(running){
-        if (pin_numer == pin){
+        if (pin_number == pin){
             /*
              * If the ADC is already running and the selected pin is the same,
              * the configuration is not modified
@@ -117,7 +131,7 @@ void FastADC::start(uint pin = 0, uint resolution_bits = 0) { //TO DO: Check how
     // Internal registers are configured to start
     ADMUX = ((1<<REFS0)|(pin_number-A0)); // Pin number is affected by an offset
     ADCSRB = 0;
-    ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | ((7-(10-resolution))<<ADPS0); //TO DO: Check on datasheet
+    ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | ((7-(10-resolution))<<ADPS0)); //TO DO: Check on datasheet
     delay(100); // TO DO: Check
     sei();
     running = true;
@@ -139,6 +153,53 @@ int FastADC::get(){
     return i;
 }
 
+
+double FastADC::voltage(){
+    /*
+     * Get the analog value in Volts.
+     * It is necessary that the user explicit the voltage reference.
+     */
+    return this-> get()*reference/1023;
+}
+
+double FastADC::voltage(int ref){
+    /*
+     * Get the analog value in Volts.
+     * It is necessary that the user explicit the voltage reference.
+     *
+     * Arg: reference as arduino-constants.
+     */
+    switch (ref){
+        #ifdef DEFAULT
+            case DEFAULT:
+                reference = 5;
+        #endif
+        #ifdef INTERNAL //ATmega168, ATmega328
+            case INTERNAL:
+                reference = 1.1;
+        #endif
+        #ifdef INTERNAL1V1 //Arduino Mega only
+            case INTERNAL1V1:
+                reference = 1.1;
+        #endif
+        #ifdef INTERNAL2V5 //Arduino Mega only
+            case INTERNAL2V5:
+                reference = 2.56;
+        #endif
+    }
+    return this-> get()*reference/1023;
+}
+
+double FastADC::voltage(double ref){
+    /*
+     * Get the analog value in Volts.
+     * It is necessary that the user explicit the voltage reference.
+     *
+     * Arg: actual reference value in Volts.
+     */
+    reference = ref;
+    return this-> get()*reference/1023;
+}
 
 void FastADC::stop(){   
     /*
