@@ -18,22 +18,23 @@
  * along with "WiPower Arduino Library". If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************************/
 
-/*
- * Free running mode is a way to use analog to digital converters at high rate.
- * 
- * Arduino can use this tecnique on one pin per time at different speeds.
- */
-
 #include "FastADC.h"
+
+void user_function (int i) {
+    /*
+     * This function is made to be called as soon as a new sample is available.
+     * In this way the board can do other tasks while is waiting for new samples.
+     */
+    Serial.println(i, DEC);    
+}
 
 void setup(){
     FADC.start(A0);
     Serial.begin(9600);
+    FADC.bind (user_function); //Function "user_function" will be called from now
+    delay(1000);
+    FADC.unbind(); //Function "user_function" will be called no more
 }
 
 void loop(){
-    int i = FADC.get();
-    Serial.println(i, DEC); //sample valued from 0 to 1023
-    double volts = FADC.voltage();
-    Serial.println(volts, DEC); //sample in volts
 }

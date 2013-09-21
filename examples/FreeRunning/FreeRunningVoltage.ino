@@ -19,9 +19,8 @@
  ************************************************************************************/
 
 /*
- * Free running mode is a way to use analog to digital converters at high rate.
- * 
- * Arduino can use this tecnique on one pin per time at different speeds.
+ * It is possible to calculate analog values directly in Volts.
+ * It must be known the exact reference value.
  */
 
 #include "FastADC.h"
@@ -29,11 +28,17 @@
 void setup(){
     FADC.start(A0);
     Serial.begin(9600);
+    double volts;
+    analogReference(DEFAULT); //Default is Vcc, which is 5V on Arduino UNO board
+    volts = FADC.voltage(DEFAULT);
+    Serial.println(volts, DEC); //sample in volts
+    analogReference(INTERNAL);
+    volts = FADC.voltage(INTERNAL); //Internal is 1.1V on Arduino UNO board
+    Serial.println(volts, DEC); //sample in volts
+    analogReference(EXTERNAL); //AREF pin has to be connected to an external reference voltage that must be between Vcc and 0V
+    volts = FADC.voltage(3.5); //If an external reference has been choosen, it must be clarified the value used.
+    Serial.println(volts, DEC); //sample in volts
 }
 
 void loop(){
-    int i = FADC.get();
-    Serial.println(i, DEC); //sample valued from 0 to 1023
-    double volts = FADC.voltage();
-    Serial.println(volts, DEC); //sample in volts
 }

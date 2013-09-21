@@ -18,22 +18,35 @@
  * along with "WiPower Arduino Library". If not, see <http://www.gnu.org/licenses/>.
  ************************************************************************************/
 
-/*
- * Free running mode is a way to use analog to digital converters at high rate.
- * 
- * Arduino can use this tecnique on one pin per time at different speeds.
- */
-
 #include "FastADC.h"
 
+/*
+ * Different speed values can be chosen.
+ * Lowest speed is 9 kHz, maximum speed is 74.
+ * 
+ * Speed affects actual resolution. Approximately:
+ * 9 kHz => 10 bit
+ * 18 kHz => 9 bit
+ * 37 kHz => 8 bit 
+ * 74 kHz => 7 bit
+ */
+
 void setup(){
-    FADC.start(A0);
     Serial.begin(9600);
 }
 
 void loop(){
-    int i = FADC.get();
-    Serial.println(i, DEC); //sample valued from 0 to 1023
-    double volts = FADC.voltage();
-    Serial.println(volts, DEC); //sample in volts
+    int i;
+    FADC.start(A0,10); //Samples pin A0 with a resolution of 10 bit (at a speed 9 kHz)
+    i = FADC.get();
+    Serial.println(i, DEC);
+    FADC.start(A3); //Samples another pin with the same speed and resolution as the last sample.
+    i = FADC.get();
+    Serial.println(i, DEC);
+    FADC.start(A0,SPEED_37_kHz); //Resolution can be selected by speed
+    i = FADC.get();
+    Serial.println(i, DEC);
+    FADC.stop(); //Stops sampling
+    i = FADC.get(); //Invalid value is "-1"
+    Serial.println(i, DEC);
 }
