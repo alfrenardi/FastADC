@@ -9,7 +9,7 @@ FADC	KEYWORD1
 #######################################
 
 stop	KEYWORD2
-get	    KEYWORD2
+get KEYWORD2
 start	KEYWORD2
 pin     KEYWORD2
 voltage KEYWORD2

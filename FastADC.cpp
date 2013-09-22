@@ -42,7 +42,9 @@ ISR(ADC_vect){
         //Truncates unuseful bits
         FADC.buffer = ADC;          
         FADC.available = true;
-        FADC.bounded_function (FADC.buffer);
+        if (FADC.bounded_function) {
+            FADC.bounded_function (FADC.buffer);
+        }
     }
 }
 
