@@ -22,13 +22,13 @@
 
 /*
  * Different speed values can be chosen.
- * Lowest speed is 9 kHz, maximum speed is 74.
+ * Lowest speed is 11 kHz, maximum speed is 90 kHz.
  * 
  * Speed affects actual resolution. Approximately:
- * 9 kHz => 10 bit
- * 18 kHz => 9 bit
- * 37 kHz => 8 bit 
- * 74 kHz => 7 bit
+ * 11 kHz => 10 bit
+ * 23 kHz => 9 bit
+ * 45 kHz => 8 bit 
+ * 90 kHz => 7 bit
  */
 
 void setup(){
@@ -43,7 +43,7 @@ void loop(){
     FADC.start(A3); //Samples another pin with the same speed and resolution as the last sample.
     i = FADC.get();
     Serial.println(i, DEC);
-    FADC.start(A0,SPEED_37_kHz); //Resolution can be selected by speed
+    FADC.start(A0,SPEED_11_kHz); //Resolution can be selected by speed
     i = FADC.get();
     Serial.println(i, DEC);
     FADC.stop(); //Stops sampling

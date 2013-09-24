@@ -26,10 +26,10 @@ typedef unsigned int uint;
 typedef void (*callback)(int);
 
 //Definitions bind speed to significant bits
-#define SPEED_9_kHz 10
-#define SPEED_18_kHz 9
-#define SPEED_37_kHz 8
-#define SPEED_74_kHz 7
+#define SPEED_11_kHz 10
+#define SPEED_23_kHz 9
+#define SPEED_45_kHz 8
+#define SPEED_90_kHz 7
 
 class FastADC {
 
