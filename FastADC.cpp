@@ -56,7 +56,7 @@ FastADC::FastADC(){
     pin_number = A0;
     available = false;
     running = false;
-    resolution = 10;
+    bits_number = 10;
     bounded_function = NULL;
     reference = 5;
 }
@@ -75,18 +75,18 @@ void FastADC::start() {
     this->start(0, 0);
 }
 
-void FastADC::start(uint pin, uint resolution_bits) {
+void FastADC::start(uint pin, uint resolution) {
     /*
      * This function starts the ADC. Resolution affects speed.
      *
      * Arg: Pin (between A0 and A5)
-     * Arg: resolution (between 7 bit and 10).
+     * Arg: bits_number (between 7 bit and 10).
      *
      * If arguments are not valid or missing, last used values are used.
-     * If it is the first time, default values are used (pin = A0 and resolution = 10)
+     * If it is the first time, default values are used (pin = A0 and bits_number = 10)
      */
     if(running){
-        if (pin_number == pin){
+        if ((pin_number == pin) and (resolution == bits_number)){
             /*
              * If the ADC is already running and the selected pin is the same,
              * the configuration is not modified
@@ -98,7 +98,7 @@ void FastADC::start(uint pin, uint resolution_bits) {
              *  If not, ADC must be stopped and restarted with the new configuration.
              */
             this->stop();
-            this->start(pin, resolution_bits);
+            this->start(pin, resolution);
         }
     }
     else{
@@ -108,11 +108,11 @@ void FastADC::start(uint pin, uint resolution_bits) {
          * backups the old registers
          * configuration before starting
          */
-        if(resolution_bits >= 7 and resolution_bits <= 10){
+        if(resolution >= 7 and resolution <= 10){
             /*
-             * Resolution must be a valid number between 7 and 10
+             * bits_number must be a valid number between 7 and 10
              */
-            resolution = resolution_bits;
+            bits_number = resolution;
         }
         if(pin >= A0 and pin <= A5){
             /*
@@ -133,8 +133,8 @@ void FastADC::start(uint pin, uint resolution_bits) {
     // Internal registers are configured to start
     ADMUX = ((1<<REFS0)|(pin_number-A0)); // Pin number is affected by an offset
     ADCSRB = 0;
-    ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | ((7-(10-resolution))<<ADPS0)); //TO DO: Check on datasheet
-    delay(100); // TO DO: Check
+    ADCSRA = ((1<<ADEN) | (1<<ADSC) | (1<<ADATE) | (1<<ADIE) | ((7-(10-bits_number))<<ADPS0));
+    delay(100);
     sei();
     running = true;
 }
@@ -236,7 +236,7 @@ int FastADC::pin(){
     return pin_number;
 }
 
-void FastADC::bind(callback fun){ //TO DO: Check
+void FastADC::bind(callback fun){
     /*
      * It defines a custom callback. Function has to be void and it must take an integer as argument
      * If one has already been defined, the new one replace the old one.

@@ -35,12 +35,12 @@ class FastADC {
 
 private:
 
-    int buffer;
+    int volatile buffer;
     int pin_number;
-    int resolution;
+    int bits_number;
 
-    bool available;
-    bool running;
+    bool volatile available;
+    bool volatile running;
 
     char old_ADCSRB;
     char old_ADCSRA;
