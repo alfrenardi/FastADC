@@ -20,20 +20,29 @@
 
 #include "FastADC.h"
 
-void user_function (int) {
+int volatile sum = 0;
+int volatile samples = 0;
+double average_value;
+
+void user_function (int i) {
     /*
      * This function is made to be called as soon as a new sample is available.
      * In this way the board can do other tasks while is waiting for new samples.
+     *
+     * Warning: Tasks must be tiny.
      */
-    Serial.println(i, DEC);    
+     samples++;
+     sum =+ i;
 }
 
 void setup(){
     FADC.start(A0);
     Serial.begin(9600);
-    FADC.bind (user_funtion); //Function "user_function" will be called from now
+    FADC.bind (*user_function); //Function "user_function" will be called from now
     delay(1000);
     FADC.unbind(); //Function "user_function" will be called no more
+    average_value = sum / (double) samples;
+    Serial.println (average_value, DEC);
 }
 
 void loop(){
