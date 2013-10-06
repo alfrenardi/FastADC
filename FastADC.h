@@ -25,11 +25,11 @@ extern "C" void __vector_21(void);
 typedef unsigned int uint;
 typedef void (*callback)(int);
 
-//Definitions bind speed to significant bits
-#define SPEED_11_kHz 10
-#define SPEED_23_kHz 9
-#define SPEED_45_kHz 8
-#define SPEED_90_kHz 7
+//Definitions bind speed in kHz
+#define SPEED_11_kHz 1
+#define SPEED_23_kHz 2
+#define SPEED_45_kHz 3
+#define SPEED_90_kHz 4
 
 class FastADC {
 
@@ -37,7 +37,7 @@ private:
 
     int volatile buffer;
     int pin_number;
-    int bits_number;
+    int speed_value;
 
     bool volatile available;
     bool volatile running;

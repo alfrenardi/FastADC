@@ -29,7 +29,7 @@ void user_function (int i) {
      * This function is made to be called as soon as a new sample is available.
      * In this way the board can do other tasks while is waiting for new samples.
      *
-     * Warning: Tasks must be tiny.
+     * Warning: Tasks must be tiny or they can not be completed in the time between a sample and the other.
      */
      samples++;
      sum =+ i;

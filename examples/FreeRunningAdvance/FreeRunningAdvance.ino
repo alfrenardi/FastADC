@@ -21,8 +21,8 @@
 #include "FastADC.h"
 
 /*
- * Different speed values can be chosen.
- * Lowest speed is 11 kHz, maximum speed is 90 kHz.
+ * Different speed values can be chosen, using a number from 1 (lowest) to 4 (highest)
+ * Minimum speed is 11 kHz, maximum speed is 90 kHz.
  * 
  * Speed affects actual resolution. Approximately:
  * 11 kHz => 10 bit
@@ -37,7 +37,7 @@ void setup(){
 
 void loop(){
     int i;
-    FADC.start(A0,10); //Samples pin A0 with a resolution of 10 bit (at a speed 9 kHz)
+    FADC.start(A0,1); //Samples pin A0 with a resolution of 10 bit (at a speed 9 kHz)
     i = FADC.get();
     Serial.println(i, DEC);
     FADC.start(A3); //Samples another pin with the same speed and resolution as the last sample.
